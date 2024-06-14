@@ -1,22 +1,16 @@
-from typing import Union
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from pathlib import Path
 
-from fastapi import FastAPI
+BASE_DIR=Path(__file__).resolve().parent    #현재파일의 경로 + Parent(현재파일의 부모폴더)
 
 app = FastAPI()
+templates = Jinja2Templates(directory=BASE_DIR/"templates")
 
 
-@app.get("/")
-def read_root():
-    print("hello world!")
-    return {"Hello": "World"}
-
-
-@app.get("/hello")
-def read_fastapi_hello():
-    print("hello world!")
-    return {"Hello": "FastAPI"}
-
-
-@app.get("/items/{item_id}/{xyz}")
-def read_item(item_id: int, xyz:str ,q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q,"xyz": xyz}
+@app.get("/items/{id}", response_class=HTMLResponse)
+async def read_item(request: Request, id: str):
+    return templates.TemplateResponse(
+        request=request, name="item.html", context={"id": id,"data":"hello fast api"}
+    )
