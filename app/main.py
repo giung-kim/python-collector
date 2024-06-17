@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
@@ -44,14 +44,36 @@ async def search(request: Request, q: str):
     naver_book_scraper = NaverBookScraper()
     books = await naver_book_scraper.search(keyword, 10)
     book_models = []
+
     for book in books:
-        book_model = BookModel(
-            keyword=keyword,
-            publisher=book.get("publisher", "Unknown"),
-            price=book.get("price", 0),
-            image=book.get("image", ""),
-        )
-        book_models.append(book_model)
+        # 디버깅 메시지 추가
+        print(f"Book data: {book}")
+
+        # "discount" 키가 있는지 확인
+        if "discount" not in book:
+            raise HTTPException(
+                status_code=404, detail="Discount not found in book data"
+            )
+
+        try:
+            # discount 값 확인
+            discount_value = book["discount"]
+            print(f"Discount value before conversion: {discount_value}")
+
+            # discount 값을 정수로 변환
+            price_value = int(discount_value)
+            print(f"Price value after conversion: {price_value}")
+
+            book_model = BookModel(
+                keyword=keyword,
+                publisher=book["publisher"],
+                price=price_value,  # discount 값을 price로 사용하고 정수로 변환
+                image=book["image"],
+            )
+            book_models.append(book_model)
+        except Exception as e:
+            print(f"Error creating book model: {e}")
+            raise HTTPException(status_code=500, detail="Error creating book model")
 
     # 3
     await mongodb.engine.save_all(book_models)
