@@ -56,7 +56,12 @@ async def search(request: Request, q: str):
     # 3
     await mongodb.engine.save_all(book_models)
 
-    context = {"request": request, "title": "Collector", "keyword": q}
+    context = {
+        "request": request,
+        "title": "Collector",
+        "keyword": q,
+        "books": book_models,
+    }
     return templates.TemplateResponse(name="./index.html", context=context)
 
 
