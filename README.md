@@ -23,3 +23,9 @@ Python-Collector는 FastAPI와 네이버 API를 이용하여 책 정보를 수�
 - **웹 스크래핑:** Naver Book API
 - **템플릿 엔진:** Jinja2
 - **기타:** Uvicorn (ASGI 서버), ODMantic (MongoDB ODM)
+
+## 향후 계획
+
+- **사용자 인증 및 권한 관리 기능 추가** 
+- **더 다양한 책 정보 소스를 활용한 데이터 수집 기능 추가** 
+- **책 정보에 대한 CRUD (Create, Read, Update, Delete) 기능 구현** 
